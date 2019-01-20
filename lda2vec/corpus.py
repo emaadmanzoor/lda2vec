@@ -101,7 +101,7 @@ class Corpus():
         order = np.argsort(counts)[::-1].astype('int32')
         keys, counts = keys[order], counts[order]
         # Add in the specials as a prefix to the other keys
-        specials = np.sort(self.specials.values())
+        specials = np.sort(np.array(list(self.specials.values())))
         keys = np.concatenate((specials, keys))
         empty = np.zeros(len(specials), dtype='int32')
         counts = np.concatenate((empty, counts))
@@ -531,8 +531,8 @@ class Corpus():
         True
         """
         n_words = len(self.compact_to_loose)
-        from gensim.models.word2vec import Word2Vec
-        model = Word2Vec.load_word2vec_format(filename, binary=True)
+        from gensim.models import KeyedVectors
+        model = KeyedVectors.load_word2vec_format(filename, binary=False)
         n_dim = model.syn0.shape[1]
         data = np.random.normal(size=(n_words, n_dim)).astype('float32')
         data -= data.mean()
@@ -576,7 +576,7 @@ class Corpus():
                     choice = np.array(keys_raw)[idx][np.argmin(d)]
                     # choice = difflib.get_close_matches(word, choices)[0]
                     vector = model[choice]
-                    print compact, word, ' --> ', choice
+                    print(compact, word, ' --> ', choice)
                 except IndexError:
                     pass
             if vector is None:
